@@ -1,0 +1,34 @@
+[
+  {
+    "id": "Rafael_10_iniciante_visual",
+    "nome": "Rafael",
+    "idade": 10,
+    "nivel": "iniciante",
+    "estilo": "visual",
+    "observacoes": "Gosta de exemplos com desenhos e cores; frases curtas."
+  },
+  {
+    "id": "Manoel_16_intermediario_cinestesico",
+    "nome": "Manoel",
+    "idade": 16,
+    "nivel": "intermediario",
+    "estilo": "cinestesico",
+    "observacoes": "Aprende fazendo; prefere desafios e experimentos simples."
+  },
+  {
+    "id": "Daniela_17_avancado_leitura_escrita",
+    "nome": "Daniela",
+    "idade": 17,
+    "nivel": "avancado",
+    "estilo": "leitura-escrita",
+    "observacoes": "Gosta de definições formais, estrutura e referências."
+  },
+  {
+    "id": "Veronica_9_iniciante_auditivo",
+    "nome": "Veronica",
+    "idade": 9,
+    "nivel": "iniciante",
+    "estilo": "auditivo",
+    "observacoes": "Entende melhor com analogias e explicações em tom de conversa."
+  }
+]

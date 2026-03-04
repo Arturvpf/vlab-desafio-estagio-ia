@@ -42,6 +42,7 @@ python -m app
 Acesse: http://127.0.0.1:5000
 
 ## Estrutura
+- `docs/` — enunciado do desafio (PDF)
 - `app/` — aplicação Flask
 - `data/student_profiles.json` — perfis (3–5)
 - `prompts/` — versões de prompts

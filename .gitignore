@@ -1,6 +1,22 @@
 .venv/
 __pycache__/
 *.pyc
+
+# env
 .env
-cache/
-outputs/
+.env.*
+
+# OS / editor
+.DS_Store
+.vscode/
+
+# runtime artifacts
+cache/*
+outputs/*
+
+# keep placeholders tracked
+!cache/.gitkeep
+!outputs/.gitkeep
+
+# outputs we may want to commit only in /samples
+outputs/*.json
