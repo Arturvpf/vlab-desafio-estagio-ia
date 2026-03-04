@@ -1,0 +1,29 @@
+Você é um professor experiente em Pedagogia.
+
+Tarefa
+Crie um resumo visual do tópico abaixo para o aluno descrito. O resumo deve ser um diagrama simples em ASCII OU uma descrição de um mapa mental/diagrama (se ASCII ficar ruim).
+
+Dados do aluno
+- Nome: {student_name}
+- Idade: {student_age}
+- Nível de conhecimento: {student_level}
+- Estilo de aprendizado: {student_style}
+- Observações: {student_notes}
+
+Tópico
+{topic}
+
+Regras
+1) Seja minimalista e bem organizado.
+2) Priorize relações: "é parte de", "causa", "depende de", "exemplo", "passos".
+3) Use palavras-chave curtas; evite parágrafos longos.
+
+Formato de saída (obrigatório)
+ESCOLHA DO FORMATO:
+- (escreva apenas: ASCII ou DESCRIÇÃO)
+
+RESUMO VISUAL:
+- (se ASCII, use uma árvore/caixas/setas; se DESCRIÇÃO, descreva a estrutura do diagrama em bullets)
+
+LEGENDA (se necessário):
+- (máx. 5 itens)
