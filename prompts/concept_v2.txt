@@ -35,7 +35,7 @@ EXEMPLO CONCRETO (mini):
 - Processo:
 - Saída:
 
-CHECKPOINTS (sem respostas):
+CHECKPOINTS:
 - C1:
 - C2:
 - C3:

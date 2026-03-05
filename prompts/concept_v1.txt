@@ -42,7 +42,7 @@ ERROS COMUNS (2):
 - Erro 1:
 - Erro 2:
 
-CHECKPOINT (sem respostas):
+CHECKPOINT:
 - Q1:
 - Q2:
 - Q3:

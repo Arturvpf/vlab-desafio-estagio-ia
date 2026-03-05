@@ -96,18 +96,46 @@ def _basic_format_guard(text: str, *, markers: tuple[str, ...]) -> None:
 
     Objetivo: falhar rápido quando o modelo ignora o formato combinado.
     Não valida 'qualidade', só estrutura mínima.
+
+    Observação: a checagem é case-insensitive para tolerar "Perguntas" vs "PERGUNTAS".
     """
 
     hay = (text or "")
+    hay_u = hay.upper()
+
     for m in markers:
-        if m not in hay:
-            raise LLMResponseFormatError(
-                f"Resposta fora do formato: não encontrei '{m}'."
-            )
+        if (m or "").upper() not in hay_u:
+            raise LLMResponseFormatError(f"Resposta fora do formato: não encontrei '{m}'.")
 
     # Heurística extra: evitar respostas vazias/curtíssimas
     if len(hay.strip()) < 80:
         raise LLMResponseFormatError("Resposta curta demais; provável falha de geração/formato.")
+
+
+def _trim_to_first_marker(text: str, markers: tuple[str, ...]) -> str:
+    """Remove qualquer texto antes do primeiro marcador (case-insensitive).
+
+    Útil quando o modelo adiciona uma frase de abertura ("Claro! ...") e isso
+    não deve aparecer na saída final.
+    """
+    if not text:
+        return text
+
+    text_u = text.upper()
+    idxs: list[int] = []
+    for m in markers:
+        mu = (m or "").upper()
+        if not mu:
+            continue
+        i = text_u.find(mu)
+        if i != -1:
+            idxs.append(i)
+
+    if not idxs:
+        return text
+
+    start = min(idxs)
+    return text[start:].lstrip()
 
 
 def generate_with_cache(
@@ -168,12 +196,15 @@ def generate_with_cache(
     prompt = template.render(student=student, topic=topic)
     llm_result = generate_text(prompt, llm_cfg)
 
-    # Validação mínima do formato.
-    _basic_format_guard(llm_result.text, markers=template.required_markers)
+    # Pós-processo: cortar frase de abertura antes do primeiro marcador.
+    cleaned = _trim_to_first_marker(llm_result.text, template.required_markers)
 
-    cache_set(key, llm_result.text)
+    # Validação mínima do formato.
+    _basic_format_guard(cleaned, markers=template.required_markers)
+
+    cache_set(key, cleaned)
     return EngineResult(
-        content=llm_result.text,
+        content=cleaned,
         llm=llm_result,
         cache_hit=False,
         cache_key=key,

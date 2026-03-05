@@ -12,6 +12,8 @@ REGRAS
 3) Sempre feche com LIÇÃO.
 
 SAÍDA (formato obrigatório)
+IMPORTANTE: não escreva introdução, comentário ou frase de abertura. Comece a resposta diretamente na próxima linha com "EXEMPLO".
+
 EXEMPLO A — COTIDIANO:
 - Contexto:
 - Ação:
@@ -30,7 +32,7 @@ EXEMPLO C — ERRO COMUM:
 - Correção:
 - LIÇÃO:
 
-EXEMPLO D — CASO-LIMITE / DESAFIO:
+EXEMPLO D — DESAFIO:
 - Enunciado:
-- Dicas (3 bullets):
+- Dicas (3 bullets, sem solução):
 - LIÇÃO:

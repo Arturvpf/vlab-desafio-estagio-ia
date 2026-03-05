@@ -5,7 +5,6 @@ from dataclasses import asdict
 from flask import Flask, redirect, render_template_string, request, url_for
 from dotenv import load_dotenv
 
-from .comparacao_prompts import comparar_duas_versoes
 from .config import ConfigError, load_llm_config
 from .geracao import (
     GenerationOptions,
@@ -22,7 +21,7 @@ HTML = """<!doctype html>
 <head>
   <meta charset=\"utf-8\" />
   <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />
-  <title>VLAB — Gerador Educativo</title>
+  <title>Gerador educativo</title>
   <style>
     body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; margin: 24px; max-width: 980px; }
     .row { display: flex; gap: 16px; flex-wrap: wrap; }
@@ -37,8 +36,8 @@ HTML = """<!doctype html>
   </style>
 </head>
 <body>
-  <h1>VLAB — Gerador Educativo</h1>
-  <p class=\"muted\">Selecione um perfil, escreva um tópico e gere o conteúdo (com cache + persistência em JSON).</p>
+  <h1>Gerador educativo</h1>
+  <p class=\"muted\">Selecione um perfil, escreva um tópico e gere o conteúdo.</p>
 
   {% if error %}
     <div class=\"warn\"><strong>Erro:</strong> {{ error }}</div>
@@ -59,7 +58,7 @@ HTML = """<!doctype html>
         </div>
 
         <div style=\"flex: 1 1 220px\">
-          <label>Tipo</label>
+          <label>Tipo de conteúdo</label>
           <select name=\"kind\" required>
             <option value=\"concept\" {% if selected.kind=='concept' %}selected{% endif %}>Explicação conceitual</option>
             <option value=\"examples\" {% if selected.kind=='examples' %}selected{% endif %}>Exemplos práticos</option>
@@ -71,13 +70,9 @@ HTML = """<!doctype html>
         <div style=\"flex: 1 1 140px\">
           <label>Versão</label>
           <select name=\"prompt_version\" required>
-            <option value=\"v1\" {% if selected.prompt_version=='v1' %}selected{% endif %}>v1</option>
-            <option value=\"v2\" {% if selected.prompt_version=='v2' %}selected{% endif %}>v2</option>
+            <option value=\"v1\" {% if selected.prompt_version=='v1' %}selected{% endif %}>Estruturado</option>
+            <option value=\"v2\" {% if selected.prompt_version=='v2' %}selected{% endif %}>Trilha + checkpoints</option>
           </select>
-          <label style=\"margin-top:10px; font-weight:500\">
-            <input type=\"checkbox\" name=\"compare\" value=\"1\" {% if selected.compare %}checked{% endif %} />
-            Comparar v1 vs v2
-          </label>
         </div>
       </div>
 
@@ -94,26 +89,22 @@ HTML = """<!doctype html>
     <h2 style=\"margin-top: 22px\">Resultado</h2>
     <div class=\"card\">
       <p class=\"muted\">
-        <strong>kind:</strong> {{ result.kind }} |
-        <strong>versão:</strong> {{ result.prompt_version }} |
-        <strong>cache_hit:</strong> {{ result.cache_hit }} |
-        <strong>cache_key:</strong> {{ result.cache_key }}
+        <strong>Tipo de conteúdo:</strong> {{ result.tipo_label }} |
+        <strong>Versão:</strong> {{ result.versao_label }} |
+        <strong>Cache:</strong>
+        {% if result.cache_hit %}
+          <span style=\"font-weight:700; color:#0a7a2f\">hit</span>
+        {% else %}
+          <span style=\"font-weight:700; color:#9a4b00\">miss</span>
+        {% endif %}
       </p>
       <pre>{{ result.content }}</pre>
-      <p class=\"muted\">Saída salva automaticamente em <code>outputs/</code> (JSON).</p>
-    </div>
-  {% endif %}
-
-  {% if comparison %}
-    <h2 style=\"margin-top: 22px\">Comparação</h2>
-    <div class=\"card\">
-      <p class=\"muted\">Arquivo salvo: <code>{{ comparison.path }}</code></p>
-      <p class=\"muted\">Abra o JSON para ver v1 e v2 lado a lado.</p>
+      <p class=\"muted\">Saída salva automaticamente em <code>outputs/</code>.</p>
     </div>
   {% endif %}
 
   <hr style=\"margin: 24px 0\" />
-  <p class=\"muted\">Dica: configure <code>.env</code> com <code>GEMINI_API_KEY</code> e rode <code>python3 -m app</code>.</p>
+  <p class=\"muted\">Configure o <code>.env</code> com sua chave de API.</p>
 </body>
 </html>"""
 
@@ -131,7 +122,6 @@ def create_app() -> Flask:
             "kind": "concept",
             "prompt_version": "v1",
             "topic": "",
-            "compare": False,
         }
         return render_template_string(HTML, profiles=profiles, selected=selected, result=None, comparison=None)
 
@@ -144,7 +134,6 @@ def create_app() -> Flask:
             "kind": request.form.get("kind", "concept"),
             "prompt_version": request.form.get("prompt_version", "v1"),
             "topic": request.form.get("topic", "").strip(),
-            "compare": request.form.get("compare") == "1",
         }
 
         try:
@@ -164,31 +153,39 @@ def create_app() -> Flask:
             "reflection": gerar_perguntas_reflexao,
             "visual": gerar_resumo_visual,
         }
+
+        kind_label = {
+            "concept": "Explicação conceitual",
+            "examples": "Exemplos práticos",
+            "reflection": "Perguntas de reflexão",
+            "visual": "Resumo visual",
+        }
+
+        versao_label = {
+            "v1": "Estruturado",
+            "v2": "Trilha + checkpoints",
+        }
         if kind not in fn_map:
             return render_template_string(
                 HTML,
                 profiles=profiles,
                 selected=selected,
-                error=f"kind inválido: {kind}",
+                error=f"tipo inválido: {kind}",
                 result=None,
                 comparison=None,
             )
 
-        comparison = None
-        if selected["compare"]:
-            # comparação gera arquivo próprio; não precisa renderizar os dois textos na tela
-            comparison = comparar_duas_versoes(kind=kind, topic=topic, student=student, llm_cfg=cfg, gerar_fn=fn_map[kind])
-            result = None
-        else:
-            opts = GenerationOptions(prompt_version=selected["prompt_version"], persist_outputs=True)
-            r = fn_map[kind](student=student, topic=topic, llm_cfg=cfg, opts=opts)
-            result = {
-                "kind": kind,
-                "prompt_version": selected["prompt_version"],
-                "cache_hit": r.cache_hit,
-                "cache_key": r.cache_key,
-                "content": r.content,
-            }
+        opts = GenerationOptions(prompt_version=selected["prompt_version"], persist_outputs=True)
+        r = fn_map[kind](student=student, topic=topic, llm_cfg=cfg, opts=opts)
+        pv = selected["prompt_version"]
+        result = {
+            "kind": kind,
+            "tipo_label": kind_label.get(kind, kind),
+            "prompt_version": pv,
+            "versao_label": versao_label.get(pv, pv),
+            "cache_hit": r.cache_hit,
+            "content": r.content,
+        }
 
         return render_template_string(
             HTML,
@@ -196,7 +193,7 @@ def create_app() -> Flask:
             selected=selected,
             error=None,
             result=result,
-            comparison=comparison,
+            comparison=None,
         )
 
     return app

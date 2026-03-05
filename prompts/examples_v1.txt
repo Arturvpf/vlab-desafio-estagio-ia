@@ -13,6 +13,8 @@ REGRAS (sem enrolação)
 4) Se estilo cinestésico: a atividade tem passos claros.
 
 SAÍDA (formato obrigatório)
+IMPORTANTE: não escreva introdução, comentário ou frase de abertura. Comece a resposta diretamente na próxima linha com "EXEMPLO 1".
+
 EXEMPLO 1 — AQUECIMENTO:
 - Cenário:
 - Ação:
@@ -31,7 +33,7 @@ EXEMPLO 3 — MÃO NA MASSA:
 - O que observar:
 - LIÇÃO:
 
-EXEMPLO 4 — DESAFIO (não resolver):
+EXEMPLO 4 — DESAFIO:
 - Enunciado:
 - Dicas (3 bullets, sem solução):
 - LIÇÃO:

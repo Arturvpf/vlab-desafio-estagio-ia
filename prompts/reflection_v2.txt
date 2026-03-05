@@ -12,6 +12,8 @@ REGRAS
 3) Inclua 2 perguntas pedindo contraexemplo/limitação.
 
 SAÍDA (formato obrigatório)
+IMPORTANTE: não escreva introdução, comentário ou frase de abertura. Comece a resposta diretamente na próxima linha com "PERGUNTAS".
+
 PERGUNTAS EM 3 BLOCOS:
 
 BLOCO 1 — ENTENDER (3):
