@@ -1,0 +1,33 @@
+{
+  "run_id": "c93df26c-fb0d-4580-b86f-bc4c8b23b793",
+  "created_at_unix": 1772676585,
+  "created_at_iso": "2026-03-05T02:09:45Z",
+  "topic": "redes neurais",
+  "kind": "examples",
+  "prompt_version": "v1",
+  "student": {
+    "id": "Rafael_10_iniciante_visual",
+    "nome": "Rafael",
+    "idade": 10,
+    "nivel": "iniciante",
+    "estilo": "visual",
+    "observacoes": "Gosta de exemplos com desenhos e cores; frases curtas."
+  },
+  "provider": null,
+  "model": null,
+  "latency_ms": null,
+  "cache_hit": true,
+  "cache_key": "0b7c77a58137d4f37541fd4df1e6cfb8ca5833186a03a4b86e0bdeb022000b60",
+  "diagnostico": {
+    "template": {
+      "id": "examples",
+      "version": "v1",
+      "fingerprint": "48f2dfed7ab4ab0f",
+      "file": "examples_v1.txt"
+    },
+    "kind": "examples",
+    "topic": "redes neurais",
+    "content_chars": 1975
+  },
+  "content": "# EXEMPLO 1 — AQUECIMENTO:\n- **Cenário:** Rafael está brincando com um jogo de montar, onde cada peça se encaixa de uma maneira.\n- **Ação:** Ele percebe que, se combinar as peças de diferentes formas, consegue criar novas figuras.\n- **Resultado:** Rafael cria um carro e uma casa, cada um de um jeito diferente.\n- **LIÇÃO:** Redes neurais funcionam como um jogo de montar, onde informações se combinam para formar novas ideias.\n\n---\n\n# EXEMPLO 2 — COTIDIANO/ESCOLA:\n- **Cenário:** Durante uma aula de ciências, a professora mostra como as plantas crescem.\n- **Ação:** Ela usa uma imagem colorida de uma planta e explica como cada parte da planta ajuda no crescimento.\n- **Resultado:** Os alunos entendem que todas as partes da planta trabalham juntas, assim como redes neurais.\n- **LIÇÃO:** Cada parte de uma rede neural colabora para entender e aprender, assim como as partes da planta.\n\n---\n\n# EXEMPLO 3 — MÃO NA MASSA:\n- **Materiais:** Papel colorido, tesoura, cola.\n- **Passos:**\n  1. Corte formas de papel (círculos, triângulos e quadrados) que representem neurônios.\n  2. Cole os \"neurônios\" em grupos, conectando-os com linhas para representar sinapses.\n  3. Crie uma história sobre como os \"neurônios\" se comunicam.\n- **O que observar:** Preste atenção em como você conecta os \"neurônios\" e forma ideias.\n- **LIÇÃO:** A comunicação entre os \"neurônios\" representa como as redes neurais aprendem e se desenvolvem.\n\n---\n\n# EXEMPLO 4 — DESAFIO (não resolver):\n- **Enunciado:** Rafael deve criar uma rede neural desenhando pelo menos 5 neurônios e 4 conexões, mostrando como eles se comunicam entre si.\n- **Dicas:**\n  - Pense em como cada neurônio pode mudar com novas informações.\n  - Use cores diferentes para mostrar diferentes tipos de neurônios.\n  - Tente contar uma história simples sobre como os neurônios ajudam a resolver um problema.\n- **LIÇÃO:** Criar uma rede neural é como criar um time; cada membro tem um papel importante e todos juntos resolvem o desafio!"
+}

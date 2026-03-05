@@ -1,0 +1,33 @@
+{
+  "run_id": "0c734c3a-3963-480d-a7af-4f31d69c0558",
+  "created_at_unix": 1772676568,
+  "created_at_iso": "2026-03-05T02:09:28Z",
+  "topic": "redes neurais",
+  "kind": "concept",
+  "prompt_version": "v1",
+  "student": {
+    "id": "Rafael_10_iniciante_visual",
+    "nome": "Rafael",
+    "idade": 10,
+    "nivel": "iniciante",
+    "estilo": "visual",
+    "observacoes": "Gosta de exemplos com desenhos e cores; frases curtas."
+  },
+  "provider": null,
+  "model": null,
+  "latency_ms": null,
+  "cache_hit": true,
+  "cache_key": "a248a2cd4ba56d387898a2bb14a894d5c323286bb0cc48b5dd62e4476846652f",
+  "diagnostico": {
+    "template": {
+      "id": "concept",
+      "version": "v1",
+      "fingerprint": "790a8aab9735bea6",
+      "file": "concept_v1.txt"
+    },
+    "kind": "concept",
+    "topic": "redes neurais",
+    "content_chars": 1351
+  },
+  "content": "TÍTULO:\nRedes Neurais\n\nIDEIA CENTRAL:\nRedes neurais imitam o cérebro e ajudam computadores a aprender.\n\nDICIONÁRIO-RÁPIDO:\n- Rede Neural = um conjunto de nós que processam informações, como neurônios no cérebro.\n- Neurônio = unidade básica que recebe e envia informações.\n- Aprendizado de Máquina = técnica que permite que computadores aprendam sozinhos com dados.\n\nEXPLICAÇÃO (em trilha):\n1) Ponto de partida: Imagine um cérebro cheio de neurônios. Cada neurônio recebe informações e toma decisões.\n2) A peça principal: A rede neural é como uma rede de neurônios que se conectam. Elas ajudam a resolver problemas.\n3) Como isso se conecta: As redes aprendem com exemplos. Quanto mais exemplos, melhor elas se tornam.\n4) Um detalhe importante: Elas precisam de dados para treinar. Se tiver muitos dados, têm um bom desempenho.\n5) Onde a galera erra: Muitas pessoas acham que redes neurais são mágicas e podem fazer tudo sozinhas. Mas elas precisam de bons dados!\n6) Como checar: Veja se a rede acerta ou erra ao fazer previsões. Isso mostra se ela aprendeu bem.\n\nERROS COMUNS (2):\n- Erro 1: Achar que as redes neurais são infalíveis.\n- Erro 2: Não ter dados suficientes para ensinar a rede.\n\nCHECKPOINT (sem respostas):\n- Q1: O que imita uma rede neural?\n- Q2: Por que os dados são importantes?\n- Q3: O que acontece se a rede neural não tem bons dados?"
+}

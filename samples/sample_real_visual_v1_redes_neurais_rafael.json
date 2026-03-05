@@ -1,0 +1,35 @@
+{
+  "run_id": "32d3ca99-5fea-4c43-8193-2bcc7fc97f58",
+  "created_at_unix": 1772676701,
+  "created_at_iso": "2026-03-05T02:11:41Z",
+  "topic": "redes neurais",
+  "kind": "visual",
+  "prompt_version": "v1",
+  "student": {
+    "id": "Rafael_10_iniciante_visual",
+    "nome": "Rafael",
+    "idade": 10,
+    "nivel": "iniciante",
+    "estilo": "visual",
+    "observacoes": "Gosta de exemplos com desenhos e cores; frases curtas."
+  },
+  "provider": "openai",
+  "model": "gpt-4o-mini",
+  "latency_ms": 4190,
+  "cache_hit": false,
+  "cache_key": "01525571f69104cb5b61ec483553231ce4efda317dcff5feb7e5daa8c19984e1",
+  "diagnostico": {
+    "template": {
+      "id": "visual",
+      "version": "v1",
+      "fingerprint": "52849ac9739c4be3",
+      "file": "visual_v1.txt"
+    },
+    "kind": "visual",
+    "topic": "redes neurais",
+    "prompt_chars": 643,
+    "output_chars": 775,
+    "content_chars": 775
+  },
+  "content": "## RESUMO VISUAL:\n\n```\n     +-------------------+\n     |   Rede Neural     |\n     +-------------------+\n            |\n            |  Aprende\n            ↓\n      +---------------+\n      | Dados de entrada|\n      +---------------+\n            |\n            |  Processa\n            ↓\n      +--------------+\n      | Neurônios    |\n      +--------------+\n            |\n            |  Saída\n            ↓\n      +--------------+\n      | Predição     |\n      +--------------+\n```\n\n## 2 EXEMPLOS (curtos):\n- Exemplo 1:  \n  **Imagem de Gato** → Rede Neural → **Reconhece Gato**\n  \n- Exemplo 2:  \n  **Texto** → Rede Neural → **Classifica Sentimento**\n\n## LEGENDA:\n- Neurônios: Processam informações.\n- Dados de entrada: Informações que a rede usa.\n- Predição: Resultados da rede neural."
+}

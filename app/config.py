@@ -8,7 +8,7 @@ class ConfigError(RuntimeError):
 
 @dataclass(frozen=True)
 class LLMConfig:
-    provider: str  # "gemini" | "openai" (futuro)
+    provider: str  # "gemini" | "openai" | "anthropic" | "xai"
     api_key: str
     model: str
     timeout_s: int = 30
@@ -26,7 +26,9 @@ def load_llm_config() -> LLMConfig:
 
     Prioridade:
       1) GEMINI_API_KEY
-      2) OPENAI_API_KEY (placeholder para depois)
+      2) OPENAI_API_KEY
+      3) ANTHROPIC_API_KEY
+      4) XAI_API_KEY
 
     Lança ConfigError se nenhuma chave estiver configurada.
     """
@@ -43,6 +45,16 @@ def load_llm_config() -> LLMConfig:
         model = _env("OPENAI_MODEL", "gpt-4o-mini") or "gpt-4o-mini"
         return LLMConfig(provider="openai", api_key=openai_key, model=model, timeout_s=timeout_s)
 
+    anthropic_key = _env("ANTHROPIC_API_KEY")
+    if anthropic_key:
+        model = _env("ANTHROPIC_MODEL", "claude-3-5-sonnet-latest") or "claude-3-5-sonnet-latest"
+        return LLMConfig(provider="anthropic", api_key=anthropic_key, model=model, timeout_s=timeout_s)
+
+    xai_key = _env("XAI_API_KEY")
+    if xai_key:
+        model = _env("XAI_MODEL", "grok-2-latest") or "grok-2-latest"
+        return LLMConfig(provider="xai", api_key=xai_key, model=model, timeout_s=timeout_s)
+
     raise ConfigError(
-        "Nenhuma API key configurada. Configure GEMINI_API_KEY (recomendado) ou OPENAI_API_KEY no .env."
+        "Nenhuma API key configurada. Configure GEMINI_API_KEY, OPENAI_API_KEY, ANTHROPIC_API_KEY ou XAI_API_KEY no .env."
     )

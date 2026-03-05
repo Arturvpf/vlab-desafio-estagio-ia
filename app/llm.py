@@ -33,6 +33,10 @@ def generate_text(prompt: str, cfg: LLMConfig) -> LLMResult:
         return _gemini_generate(prompt, cfg)
     if cfg.provider == "openai":
         return _openai_generate(prompt, cfg)
+    if cfg.provider == "anthropic":
+        return _anthropic_generate(prompt, cfg)
+    if cfg.provider == "xai":
+        return _xai_generate(prompt, cfg)
     raise LLMUpstreamError(f"Provider desconhecido: {cfg.provider}")
 
 
@@ -163,6 +167,136 @@ def _extract_openai_text(data: dict) -> str:
             chunks.append(t2)
 
     return "\n".join(chunks).strip()
+
+
+def _anthropic_generate(prompt: str, cfg: LLMConfig) -> LLMResult:
+    """Chamada simples ao Anthropic Claude (Messages API)."""
+
+    url = "https://api.anthropic.com/v1/messages"
+    headers = {
+        "x-api-key": cfg.api_key,
+        "anthropic-version": "2023-06-01",
+        "content-type": "application/json",
+    }
+
+    payload = {
+        "model": cfg.model,
+        "max_tokens": 900,
+        "messages": [{"role": "user", "content": prompt}],
+    }
+
+    start = time.time()
+    try:
+        resp = requests.post(url, headers=headers, json=payload, timeout=cfg.timeout_s)
+    except requests.Timeout as e:
+        raise LLMTimeoutError("Timeout ao chamar Claude (Anthropic)") from e
+    except requests.RequestException as e:
+        raise LLMUpstreamError("Falha de rede ao chamar Claude (Anthropic)") from e
+
+    latency_ms = int((time.time() - start) * 1000)
+
+    if resp.status_code in (401, 403):
+        raise LLMAuthError("Falha de autenticação (verifique ANTHROPIC_API_KEY)")
+    if resp.status_code == 429:
+        raise LLMRateLimitError("Rate limit / quota excedida (Anthropic)")
+    if resp.status_code >= 500:
+        raise LLMUpstreamError(f"Erro upstream Anthropic ({resp.status_code})")
+
+    try:
+        data = resp.json()
+    except json.JSONDecodeError as e:
+        raise LLMResponseFormatError("Resposta não-JSON da Anthropic") from e
+
+    # Erros costumam vir como {"type":"error", "error": {"type":..., "message":...}}
+    if isinstance(data, dict) and data.get("type") == "error":
+        err = data.get("error") or {}
+        msg = (err.get("message") if isinstance(err, dict) else None) or "Erro retornado pela Anthropic"
+        et = err.get("type") if isinstance(err, dict) else None
+        detail = msg + (f" | type={et}" if et else "")
+        raise LLMUpstreamError(f"Anthropic retornou erro ({resp.status_code}): {detail}")
+
+    # Resposta esperada: content: [{type:'text', text:'...'}, ...]
+    content = data.get("content") if isinstance(data, dict) else None
+    if not isinstance(content, list) or not content:
+        raise LLMResponseFormatError(
+            f"Formato inesperado da resposta Anthropic: sem content[] | keys={list(data.keys()) if isinstance(data, dict) else type(data)}"
+        )
+
+    chunks: list[str] = []
+    for c in content:
+        if not isinstance(c, dict):
+            continue
+        if c.get("type") == "text":
+            t = c.get("text")
+            if isinstance(t, str) and t.strip():
+                chunks.append(t)
+
+    text = "\n".join(chunks).strip()
+    if not text:
+        raise LLMResponseFormatError("Formato inesperado da resposta Anthropic: sem texto")
+
+    return LLMResult(text=text, provider="anthropic", model=cfg.model, latency_ms=latency_ms)
+
+
+def _xai_generate(prompt: str, cfg: LLMConfig) -> LLMResult:
+    """Chamada simples ao Grok (xAI).
+
+    A API da xAI é compatível com o estilo OpenAI Chat Completions.
+    """
+
+    url = "https://api.x.ai/v1/chat/completions"
+    headers = {
+        "Authorization": f"Bearer {cfg.api_key}",
+        "Content-Type": "application/json",
+    }
+
+    payload = {
+        "model": cfg.model,
+        "messages": [{"role": "user", "content": prompt}],
+        "temperature": 0.4,
+    }
+
+    start = time.time()
+    try:
+        resp = requests.post(url, headers=headers, json=payload, timeout=cfg.timeout_s)
+    except requests.Timeout as e:
+        raise LLMTimeoutError("Timeout ao chamar Grok (xAI)") from e
+    except requests.RequestException as e:
+        raise LLMUpstreamError("Falha de rede ao chamar Grok (xAI)") from e
+
+    latency_ms = int((time.time() - start) * 1000)
+
+    if resp.status_code in (401, 403):
+        raise LLMAuthError("Falha de autenticação (verifique XAI_API_KEY)")
+    if resp.status_code == 429:
+        raise LLMRateLimitError("Rate limit / quota excedida (xAI)")
+    if resp.status_code >= 500:
+        raise LLMUpstreamError(f"Erro upstream xAI ({resp.status_code})")
+
+    try:
+        data = resp.json()
+    except json.JSONDecodeError as e:
+        raise LLMResponseFormatError("Resposta não-JSON da xAI") from e
+
+    if isinstance(data, dict) and data.get("error"):
+        err = data.get("error")
+        if isinstance(err, dict):
+            msg = err.get("message") or "Erro retornado pela xAI"
+        else:
+            msg = str(err)
+        raise LLMUpstreamError(f"xAI retornou erro ({resp.status_code}): {msg}")
+
+    try:
+        choices = data.get("choices") or []
+        msg = choices[0]["message"]["content"]
+        if not isinstance(msg, str) or not msg.strip():
+            raise KeyError("content vazio")
+    except Exception as e:
+        raise LLMResponseFormatError(
+            f"Formato inesperado da resposta xAI: {str(e)} | keys={list(data.keys()) if isinstance(data, dict) else type(data)}"
+        ) from e
+
+    return LLMResult(text=msg.strip(), provider="xai", model=cfg.model, latency_ms=latency_ms)
 
 
 def _gemini_generate(prompt: str, cfg: LLMConfig) -> LLMResult:
