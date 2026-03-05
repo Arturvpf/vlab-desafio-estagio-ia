@@ -64,7 +64,10 @@ def get(key: str, *, ttl_s: int | None = None) -> CacheHit | CacheMiss:
 
 
 def set(key: str, value: Any) -> str:
-    """Grava uma entrada no cache e retorna o caminho do arquivo."""
+    """Grava uma entrada no cache e retorna o caminho do arquivo.
+
+    Observação: salvamos como JSON (com ensure_ascii=False) para facilitar inspeção.
+    """
     CACHE_DIR.mkdir(parents=True, exist_ok=True)
 
     p = cache_path(key)
