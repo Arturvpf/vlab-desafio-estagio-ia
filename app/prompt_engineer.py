@@ -41,11 +41,14 @@ class PromptTemplate:
         return self.path.read_text(encoding="utf-8")
 
     def fingerprint(self) -> str:
-        """Assinatura curta do template para participar da chave do cache."""
-        txt = self.read_text()
-        # remove espaços para estabilizar pequenas diferenças de indentação
-        collapsed = re.sub(r"\s+", " ", txt).strip()
-        return str(abs(hash(collapsed)))
+        """Assinatura estável do template para participar da chave do cache.
+
+        Usamos sha256 do conteúdo do arquivo para evitar variação entre execuções.
+        """
+        import hashlib
+
+        txt = self.read_text().encode("utf-8")
+        return hashlib.sha256(txt).hexdigest()[:16]
 
     def render(self, *, student: StudentProfile, topic: str) -> str:
         raw = self.read_text()
@@ -79,6 +82,7 @@ class EngineResult:
     llm: LLMResult | None
     cache_hit: bool
     cache_key: str
+    meta: dict[str, Any]
 
 
 def _clean_topic(topic: str) -> str:
@@ -88,15 +92,22 @@ def _clean_topic(topic: str) -> str:
 
 
 def _basic_format_guard(text: str, *, markers: tuple[str, ...]) -> None:
-    """Guarda de formato bem simples.
+    """Guarda de formato (prática, não acadêmica).
 
-    Não tenta avaliar qualidade, só detecta respostas claramente fora do formato.
+    Objetivo: falhar rápido quando o modelo ignora o formato combinado.
+    Não valida 'qualidade', só estrutura mínima.
     """
+
+    hay = (text or "")
     for m in markers:
-        if m not in text:
+        if m not in hay:
             raise LLMResponseFormatError(
-                f"Resposta não contém o marcador obrigatório '{m}'. Resposta veio fora do formato."
+                f"Resposta fora do formato: não encontrei '{m}'."
             )
+
+    # Heurística extra: evitar respostas vazias/curtíssimas
+    if len(hay.strip()) < 80:
+        raise LLMResponseFormatError("Resposta curta demais; provável falha de geração/formato.")
 
 
 def generate_with_cache(
@@ -137,7 +148,22 @@ def generate_with_cache(
     key = make_cache_key(payload=cache_payload)
     cached = cache_get(key, ttl_s=ttl_s)
     if isinstance(cached, CacheHit):
-        return EngineResult(content=str(cached.value), llm=None, cache_hit=True, cache_key=key)
+        return EngineResult(
+            content=str(cached.value),
+            llm=None,
+            cache_hit=True,
+            cache_key=key,
+            meta={
+                "template": {
+                    "id": template.template_id,
+                    "version": template.version,
+                    "fingerprint": template.fingerprint(),
+                    "file": template.path.name,
+                },
+                "kind": kind,
+                "topic": topic,
+            },
+        )
 
     prompt = template.render(student=student, topic=topic)
     llm_result = generate_text(prompt, llm_cfg)
@@ -146,15 +172,33 @@ def generate_with_cache(
     _basic_format_guard(llm_result.text, markers=template.required_markers)
 
     cache_set(key, llm_result.text)
-    return EngineResult(content=llm_result.text, llm=llm_result, cache_hit=False, cache_key=key)
+    return EngineResult(
+        content=llm_result.text,
+        llm=llm_result,
+        cache_hit=False,
+        cache_key=key,
+        meta={
+            "template": {
+                "id": template.template_id,
+                "version": template.version,
+                "fingerprint": template.fingerprint(),
+                "file": template.path.name,
+            },
+            "kind": kind,
+            "topic": topic,
+            "prompt_chars": len(prompt),
+            "output_chars": len(llm_result.text),
+        },
+    )
 
 
 def load_template(kind: str, version: str = "v1") -> PromptTemplate:
     """Carrega template de prompt por tipo e versão."""
     kind_map = {
-        "concept": ("concept", ("TÍTULO:", "EXPLICAÇÃO")),
-        "examples": ("examples", ("EXEMPLO 1", "EXEMPLO 4")),
-        "reflection": ("reflection", ("PERGUNTAS", "COMO RESPONDER")),
+        # marcadores usados como "sinalizadores" do formato
+        "concept": ("concept", ("TÍTULO", "EXPLICAÇÃO")),
+        "examples": ("examples", ("EXEMPLO", "LIÇÃO")),
+        "reflection": ("reflection", ("PERGUNTAS",)),
         "visual": ("visual", ("RESUMO VISUAL",)),
     }
     if kind not in kind_map:

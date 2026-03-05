@@ -4,12 +4,14 @@ from dataclasses import dataclass
 
 from .config import LLMConfig
 from .prompt_engineer import EngineResult, StudentProfile, generate_with_cache, load_template
+from .registro_saida import OutputRecord, build_record, save_record
 
 
 @dataclass(frozen=True)
 class GenerationOptions:
     prompt_version: str = "v1"
     cache_ttl_s: int | None = None
+    persist_outputs: bool = True
 
 
 def gerar_explicacao_conceitual(
@@ -21,7 +23,7 @@ def gerar_explicacao_conceitual(
 ) -> EngineResult:
     opts = opts or GenerationOptions()
     template = load_template("concept", version=opts.prompt_version)
-    return generate_with_cache(
+    result = generate_with_cache(
         kind="concept",
         template=template,
         student=student,
@@ -29,6 +31,22 @@ def gerar_explicacao_conceitual(
         llm_cfg=llm_cfg,
         ttl_s=opts.cache_ttl_s,
     )
+
+    if opts.persist_outputs:
+        record = build_record(
+            topic=topic,
+            kind="concept",
+            prompt_version=opts.prompt_version,
+            student=student,
+            content=result.content,
+            cache_hit=result.cache_hit,
+            cache_key=result.cache_key,
+            llm=result.llm,
+            diagnostico=result.meta,
+        )
+        save_record(record)
+
+    return result
 
 
 def gerar_exemplos_praticos(
@@ -40,7 +58,7 @@ def gerar_exemplos_praticos(
 ) -> EngineResult:
     opts = opts or GenerationOptions()
     template = load_template("examples", version=opts.prompt_version)
-    return generate_with_cache(
+    result = generate_with_cache(
         kind="examples",
         template=template,
         student=student,
@@ -48,6 +66,22 @@ def gerar_exemplos_praticos(
         llm_cfg=llm_cfg,
         ttl_s=opts.cache_ttl_s,
     )
+
+    if opts.persist_outputs:
+        record = build_record(
+            topic=topic,
+            kind="examples",
+            prompt_version=opts.prompt_version,
+            student=student,
+            content=result.content,
+            cache_hit=result.cache_hit,
+            cache_key=result.cache_key,
+            llm=result.llm,
+            diagnostico=result.meta,
+        )
+        save_record(record)
+
+    return result
 
 
 def gerar_perguntas_reflexao(
@@ -59,7 +93,7 @@ def gerar_perguntas_reflexao(
 ) -> EngineResult:
     opts = opts or GenerationOptions()
     template = load_template("reflection", version=opts.prompt_version)
-    return generate_with_cache(
+    result = generate_with_cache(
         kind="reflection",
         template=template,
         student=student,
@@ -67,6 +101,22 @@ def gerar_perguntas_reflexao(
         llm_cfg=llm_cfg,
         ttl_s=opts.cache_ttl_s,
     )
+
+    if opts.persist_outputs:
+        record = build_record(
+            topic=topic,
+            kind="reflection",
+            prompt_version=opts.prompt_version,
+            student=student,
+            content=result.content,
+            cache_hit=result.cache_hit,
+            cache_key=result.cache_key,
+            llm=result.llm,
+            diagnostico=result.meta,
+        )
+        save_record(record)
+
+    return result
 
 
 def gerar_resumo_visual(
@@ -78,7 +128,7 @@ def gerar_resumo_visual(
 ) -> EngineResult:
     opts = opts or GenerationOptions()
     template = load_template("visual", version=opts.prompt_version)
-    return generate_with_cache(
+    result = generate_with_cache(
         kind="visual",
         template=template,
         student=student,
@@ -86,3 +136,19 @@ def gerar_resumo_visual(
         llm_cfg=llm_cfg,
         ttl_s=opts.cache_ttl_s,
     )
+
+    if opts.persist_outputs:
+        record = build_record(
+            topic=topic,
+            kind="visual",
+            prompt_version=opts.prompt_version,
+            student=student,
+            content=result.content,
+            cache_hit=result.cache_hit,
+            cache_key=result.cache_key,
+            llm=result.llm,
+            diagnostico=result.meta,
+        )
+        save_record(record)
+
+    return result
