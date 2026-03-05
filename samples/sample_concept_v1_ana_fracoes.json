@@ -1,0 +1,34 @@
+{
+  "run_id": "sample-0001",
+  "created_at_unix": 0,
+  "created_at_iso": "1970-01-01T00:00:00Z",
+  "topic": "Frações (introdução)",
+  "kind": "concept",
+  "prompt_version": "v1",
+  "student": {
+    "id": "ana_8_iniciante_visual",
+    "nome": "Ana",
+    "idade": 8,
+    "nivel": "iniciante",
+    "estilo": "visual",
+    "observacoes": "Exemplo de sample (conteúdo ilustrativo)."
+  },
+  "provider": null,
+  "model": null,
+  "latency_ms": null,
+  "cache_hit": false,
+  "cache_key": "sample",
+  "diagnostico": {
+    "kind": "concept",
+    "template": {
+      "id": "concept",
+      "version": "v1",
+      "fingerprint": "sample",
+      "file": "concept_v1.txt"
+    },
+    "prompt_chars": 0,
+    "output_chars": 0,
+    "note": "Este arquivo é um exemplo de estrutura. Gere samples reais rodando a aplicação com API key."
+  },
+  "content": "TÍTULO:\nFrações: pedaços de um todo\n\nIDEIA CENTRAL:\nUma fração mostra quantas partes iguais pegamos de um todo dividido.\n\nDICIONÁRIO-RÁPIDO:\n- fração = uma forma de representar partes iguais de algo\n- numerador = quantas partes você pegou\n- denominador = em quantas partes iguais o todo foi dividido\n\nEXPLICAÇÃO (em trilha):\n1) Ponto de partida: imagine uma pizza dividida em partes iguais.\n2) A peça principal: o denominador diz em quantas partes a pizza foi cortada.\n3) Como isso se conecta: o numerador diz quantas dessas partes você escolheu.\n4) Um detalhe importante: as partes precisam ser do mesmo tamanho para a fração fazer sentido.\n5) Onde a galera erra: trocar numerador e denominador muda totalmente a fração.\n6) Como checar: desenhe o todo dividido e pinte a quantidade do numerador.\n\nERROS COMUNS (2):\n- Pensar que 1/8 é maior que 1/4 só porque 8 é maior que 4.\n- Dividir o desenho em pedaços diferentes e chamar de fração mesmo assim.\n\nCHECKPOINT (sem respostas):\n- Q1: Em 3/5, o que significa o 5?\n- Q2: Qual é maior: 1/2 ou 1/3?\n- Q3: Se um chocolate foi dividido em 10 partes e você pegou 4, qual fração representa isso?"
+}
